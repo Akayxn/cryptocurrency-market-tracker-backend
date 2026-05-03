@@ -15,6 +15,7 @@ public class WatchList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "watchlist_id")
     private Long watchlistId;
 
     @ManyToOne

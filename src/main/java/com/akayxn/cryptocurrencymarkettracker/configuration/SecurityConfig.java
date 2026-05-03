@@ -28,7 +28,7 @@ public class SecurityConfig {
          return http.csrf(AbstractHttpConfigurer::disable)
                  // in the first and second line is basically letting people access without any permission
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         // and anyRequest.aunenticated basically means that any other request must be logged in
                         // before sending a request
                         .anyRequest().authenticated())
