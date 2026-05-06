@@ -29,6 +29,7 @@ public class SecurityConfig {
                  // in the first and second line is basically letting people access without any permission
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         // and anyRequest.aunenticated basically means that any other request must be logged in
                         // before sending a request
                         .anyRequest().authenticated())
