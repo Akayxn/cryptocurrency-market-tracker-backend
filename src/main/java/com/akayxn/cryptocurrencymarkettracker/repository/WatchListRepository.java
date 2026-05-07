@@ -13,7 +13,5 @@ public interface WatchListRepository extends JpaRepository<WatchList,Long> {
 
     List<WatchList> findByUser(User user);
 
-
-
-
-}
+    WatchList findByUserAndCryptoAsset(User user, CryptoAsset cryptoAsset);
+  }

@@ -19,11 +19,11 @@ public class WatchList {
     private Long watchlistId;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "assetId")
+    @JoinColumn(name = "asset_id")
     private CryptoAsset cryptoAsset;
 
 }

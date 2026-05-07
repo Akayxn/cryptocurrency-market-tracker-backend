@@ -18,10 +18,17 @@ public class CryptoPriceProducer {
    // basically this function runs every 30 second 30000 == 30 seconds
    @Scheduled(fixedDelay = 30000)
     private void fetchTopCoins(){
-       // we fetch the List of CryptoCoins from the externalApi
-        var coinList = externalApiService.fetchTopCoins();
-        // then we iterate over list and send each coin over to them.
-       coinList.forEach(coin -> kafkaTemplate.send("crypto-prices",coin));
+       try{
+           System.out.println("Scheduler Fired!");
+           // we fetch the List of CryptoCoins from the externalApi
+           var coinList = externalApiService.fetchTopCoins();
+           // then we iterate over list and send each coin over to them.
+           coinList.forEach(coin -> kafkaTemplate.send("crypto-prices",coin));
+       }
+       catch (Exception e){
+           System.out.println("Scheduler error: " + e.getMessage());
+       }
+
    }
 
 }
