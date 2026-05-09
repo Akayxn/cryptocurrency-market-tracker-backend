@@ -1,5 +1,6 @@
 package com.akayxn.cryptocurrencymarkettracker.service;
 
+import com.akayxn.cryptocurrencymarkettracker.exception.ResourceNotFoundException;
 import com.akayxn.cryptocurrencymarkettracker.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,6 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
                 .or(() -> userRepository.findByUsername(username))
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
     }
 }

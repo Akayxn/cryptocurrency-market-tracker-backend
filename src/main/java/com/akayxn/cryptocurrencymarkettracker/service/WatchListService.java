@@ -1,16 +1,14 @@
 package com.akayxn.cryptocurrencymarkettracker.service;
 
+import com.akayxn.cryptocurrencymarkettracker.exception.ResourceNotFoundException;
 import com.akayxn.cryptocurrencymarkettracker.model.CryptoAsset;
-import com.akayxn.cryptocurrencymarkettracker.model.User;
 import com.akayxn.cryptocurrencymarkettracker.model.WatchList;
+import com.akayxn.cryptocurrencymarkettracker.repository.CryptoAssetRepository;
 import com.akayxn.cryptocurrencymarkettracker.repository.UserRepository;
 import com.akayxn.cryptocurrencymarkettracker.repository.WatchListRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 
 import java.util.List;
 
@@ -20,8 +18,12 @@ public class WatchListService {
 
     private final WatchListRepository watchListRepository;
     private final UserRepository userRepository;
-    public List<WatchList> getAllWatchListOfUser(User user){
-        return watchListRepository.findByUser(user);
+    private final CryptoAssetRepository assetRepository;
+
+    public List<WatchList> getAllWatchListOfUser(){
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+        var loadedUser = userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("User with that username not found!"));
+        return watchListRepository.findByUser(loadedUser);
     }
 
     public WatchList addToWatchList(CryptoAsset cryptoAsset){
@@ -29,7 +31,7 @@ public class WatchListService {
         var username =SecurityContextHolder.getContext().getAuthentication().getName();
 //      then we are loading the whole user using the username because our next function needs it.
        var searchedUser = userRepository.findByUsername(username)
-               .orElseThrow(() -> new UsernameNotFoundException("User with that username found!"));
+               .orElseThrow(() -> new ResourceNotFoundException("User with that username found!"));
 //      now after getting the username we search for the watchlist if it exists or not;
        var searchedWatchlist = watchListRepository.findByUserAndCryptoAsset(searchedUser,cryptoAsset);
 
@@ -41,8 +43,27 @@ public class WatchListService {
         watchlist.setUser(searchedUser);
         watchlist.setCryptoAsset(cryptoAsset);
 
-        return    watchListRepository.save(watchlist);
+        return watchListRepository.save(watchlist);
 
     }
 
+
+    public void removeFromWatchList(Long cryptoAssetId){
+        // firstly we get the username from the security context
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+//        then we find the user using the username we got from the security context.
+        var loadedUser = userRepository.findByUsername(username)
+                .orElseThrow(()-> new ResourceNotFoundException("User with that username not found!"));
+
+        var searchedCryptoAsset = assetRepository.findById(cryptoAssetId)
+                .orElseThrow(()-> new ResourceNotFoundException("Crypto Asset with that id not found!"));
+        // then we search from the specific watchlist if the user has it or not using the both the user we loaded and the crypto asset
+        var searchedWatchlist =  watchListRepository.findByUserAndCryptoAsset(loadedUser,searchedCryptoAsset);
+
+        if(searchedWatchlist==null) throw new ResourceNotFoundException("No cryptoAsset with that name found!");
+
+        watchListRepository.delete(searchedWatchlist);
+
+    }
 }
