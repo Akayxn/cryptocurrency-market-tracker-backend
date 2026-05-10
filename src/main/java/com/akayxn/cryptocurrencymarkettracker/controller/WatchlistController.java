@@ -1,6 +1,7 @@
 package com.akayxn.cryptocurrencymarkettracker.controller;
 
 import com.akayxn.cryptocurrencymarkettracker.dto.ApiResponse;
+import com.akayxn.cryptocurrencymarkettracker.dto.WatchListResponseDto;
 import com.akayxn.cryptocurrencymarkettracker.model.CryptoAsset;
 import com.akayxn.cryptocurrencymarkettracker.model.WatchList;
 import com.akayxn.cryptocurrencymarkettracker.service.WatchListService;
@@ -20,13 +21,14 @@ public class WatchlistController {
     private final WatchListService watchListService;
 
     @GetMapping
-    public ResponseEntity<List<WatchList>> getAllWatchList(){
+    public ResponseEntity<List<WatchListResponseDto>> getAllWatchList(){
         return new ResponseEntity<>(watchListService.getAllWatchListOfUser(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<WatchList> addWatchList(@RequestBody CryptoAsset cryptoAsset){
-        var savedWatchlist = watchListService.addToWatchList(cryptoAsset);
+    @PostMapping("/{cryptoId}")
+    public ResponseEntity<WatchListResponseDto> addWatchList(@PathVariable Long cryptoId){
+
+        var savedWatchlist = watchListService.addToWatchList(cryptoId);
 
         return new ResponseEntity<>(savedWatchlist,HttpStatus.OK);
     }
