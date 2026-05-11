@@ -4,6 +4,7 @@ import com.akayxn.cryptocurrencymarkettracker.dto.AuthResponseDto;
 import com.akayxn.cryptocurrencymarkettracker.dto.SignInRequestDto;
 import com.akayxn.cryptocurrencymarkettracker.dto.SignUpRequestDto;
 import com.akayxn.cryptocurrencymarkettracker.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,12 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody SignInRequestDto signInRequestDto){
+    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody SignInRequestDto signInRequestDto){
         return new ResponseEntity<>(authService.login(signInRequestDto), HttpStatus.OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDto> register(@RequestBody  SignUpRequestDto signUpRequestDto){
+    public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody  SignUpRequestDto signUpRequestDto){
         return new ResponseEntity<>(authService.register(signUpRequestDto),HttpStatus.CREATED);
     }
 

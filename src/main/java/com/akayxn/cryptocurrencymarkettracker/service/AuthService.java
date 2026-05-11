@@ -3,6 +3,8 @@ package com.akayxn.cryptocurrencymarkettracker.service;
 import com.akayxn.cryptocurrencymarkettracker.dto.AuthResponseDto;
 import com.akayxn.cryptocurrencymarkettracker.dto.SignInRequestDto;
 import com.akayxn.cryptocurrencymarkettracker.dto.SignUpRequestDto;
+import com.akayxn.cryptocurrencymarkettracker.exception.ResourceAlreadyExistsException;
+import com.akayxn.cryptocurrencymarkettracker.exception.ResourceNotFoundException;
 import com.akayxn.cryptocurrencymarkettracker.model.User;
 import com.akayxn.cryptocurrencymarkettracker.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class AuthService {
         );
 
         var searchedUser = userRepository.findByEmail(signInDetails.getEmail())
-                .orElseThrow(()-> new UsernameNotFoundException("User with the email " +signInDetails.getEmail() +" not found!"));
+                .orElseThrow(()-> new ResourceNotFoundException("User with the email " +signInDetails.getEmail() +" not found!"));
 
         AuthResponseDto authResponseDto = new AuthResponseDto();
         authResponseDto.setToken(jwtService.generateToken(searchedUser));
@@ -39,7 +41,7 @@ public class AuthService {
 
         if(userRepository.existsByUsername(signUpDetails.getUsername()) ||
             userRepository.existsByEmail(signUpDetails.getEmail())
-        ) throw new RuntimeException("Username or Email already exists.");
+        ) throw new ResourceAlreadyExistsException("Username or Email already exists.");
 
         signUpDetails.setPassword(passwordEncoder.encode(signUpDetails.getPassword()));
 
